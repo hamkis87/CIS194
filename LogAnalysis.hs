@@ -35,3 +35,17 @@ build messages = let
                    build' (m:ms) msg_tree = build' ms (insert m msg_tree)
                  in
                    build' messages Leaf
+
+inOrder :: MessageTree -> [LogMessage]
+inOrder Leaf = []
+inOrder (Node l msg r) = (inOrder l) ++ [msg] ++ (inOrder r)
+
+whatWentWrong :: [LogMessage] -> [String]
+whatWentWrong messages = let
+                            sorted_messages = inOrder (build messages)
+                            whatWentWrong' [] = []
+                            whatWentWrong' ((LogMessage (Error n) _ m):msgs)
+                                         | n >= 50 = m:(whatWentWrong' msgs)
+                            whatWentWrong' (_:msgs) = whatWentWrong' msgs
+                         in
+                            whatWentWrong' sorted_messages
